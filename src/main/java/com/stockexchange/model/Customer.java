@@ -4,10 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -26,7 +23,10 @@ public class Customer implements PossessId {
     private String lastName;
 
     @NotNull
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private ContactDetails contactDetails;
+
+    public Customer() {}
 
     public Customer(String firstName, String lastName, ContactDetails contactDetails) {
         this.firstName = firstName;
