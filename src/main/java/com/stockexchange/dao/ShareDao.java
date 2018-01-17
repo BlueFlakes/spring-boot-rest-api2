@@ -5,5 +5,5 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ShareDao extends CrudRepository<Share, Integer>{
+public interface ShareDao extends CommonRepository<Share, Integer>{
 }

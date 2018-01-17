@@ -1,16 +1,16 @@
 package com.stockexchange.controller;
 
+import com.stockexchange.dao.CommonRepository;
 import com.stockexchange.exception.AlreadyOccupiedIdException;
 import com.stockexchange.exception.InvalidMethodNamesException;
 import com.stockexchange.exception.UnavailableElementException;
-
+import com.stockexchange.model.PossessArchivedStatus;
 import com.stockexchange.model.PossessId;
 import com.stockexchange.service.restService.DefaultRestServiceImpl;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.web.bind.annotation.*;
 
-public abstract class WebController<T extends PossessId,
-                                    P extends CrudRepository<T, Integer>,
+public abstract class WebController<T extends PossessId & PossessArchivedStatus,
+                                    P extends CommonRepository<T, Integer>,
                                     U extends DefaultRestServiceImpl<T, P>> {
     private U restService;
 
