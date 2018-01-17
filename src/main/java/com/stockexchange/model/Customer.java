@@ -23,6 +23,9 @@ public class Customer implements PossessId {
     private String lastName;
 
     @NotNull
+    private boolean isArchived;
+
+    @NotNull
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private ContactDetails contactDetails;
 
