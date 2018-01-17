@@ -11,10 +11,9 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-@Getter
-@Setter
+
 @Entity
-public class Share implements PossessId {
+public class Share implements PossessId, PossessArchivedStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -27,6 +26,9 @@ public class Share implements PossessId {
 
     @NotNull
     private OccupiedSide occupiedSide;
+
+    @NotNull
+    private boolean archived;
 
     public Share() {}
 
@@ -50,5 +52,46 @@ public class Share implements PossessId {
 
     private void generateDifference(BigDecimal actualPrice) {
 
+    }
+
+    @Override
+    public Integer getId( ) {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getPriceWhenBought( ) {
+        return priceWhenBought;
+    }
+
+    public void setPriceWhenBought(Integer priceWhenBought) {
+        this.priceWhenBought = priceWhenBought;
+    }
+
+    public Integer getSharesAmount( ) {
+        return sharesAmount;
+    }
+
+    public void setSharesAmount(Integer sharesAmount) {
+        this.sharesAmount = sharesAmount;
+    }
+
+    public OccupiedSide getOccupiedSide( ) {
+        return occupiedSide;
+    }
+
+    public void setOccupiedSide(OccupiedSide occupiedSide) {
+        this.occupiedSide = occupiedSide;
+    }
+
+    public boolean isArchived( ) {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 }
