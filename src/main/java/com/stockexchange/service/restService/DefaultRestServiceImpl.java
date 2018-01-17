@@ -1,17 +1,19 @@
 package com.stockexchange.service.restService;
 
+import com.stockexchange.dao.CommonRepository;
 import com.stockexchange.exception.AlreadyOccupiedIdException;
+import com.stockexchange.exception.AppCustomException;
 import com.stockexchange.exception.InvalidMethodNamesException;
 import com.stockexchange.exception.UnavailableElementException;
+import com.stockexchange.model.Customer;
+import com.stockexchange.model.PossessArchivedStatus;
 import com.stockexchange.model.PossessId;
 import com.stockexchange.service.ObjectFieldValueSwapper;
-import org.springframework.data.repository.CrudRepository;
 
 import java.util.function.Consumer;
 
-
-public abstract class DefaultRestServiceImpl<T extends PossessId,
-                                             U extends CrudRepository<T, Integer>>
+public abstract class DefaultRestServiceImpl<T extends PossessId & PossessArchivedStatus,
+                                             U extends CommonRepository<T, Integer>>
                                              implements RestService<T> {
     private U objectDao;
     private ObjectFieldValueSwapper<T> fieldValueSwapper;
@@ -21,71 +23,76 @@ public abstract class DefaultRestServiceImpl<T extends PossessId,
         this.fieldValueSwapper = fieldValueSwapper;
     }
 
+
     @Override
-    public Iterable<T> getAll() {
-        return this.objectDao.findAll();
+    public Iterable<T> getAll( ) {
+        return this.objectDao.findAllByArchivedIsFalse();
     }
 
     @Override
     public T get(Integer id) throws UnavailableElementException {
-        if (exists(id)) {
+        if (existsAndArchivedIsFalse(id)) {
             return this.objectDao.findOne(id);
         }
 
-        throw new UnavailableElementException("Item with given Id does not exist.");
+        throw new UnavailableElementException("Unavailable item");
+    }
+
+    @Override
+    public void deleteById(Integer id) throws UnavailableElementException {
+        if (existsAndArchivedIsFalse(id)) {
+            archive(id);
+            return;
+        }
+
+        throw new UnavailableElementException("Unavailable item");
+    }
+
+    private void archive(Integer id) throws UnavailableElementException {
+        T foundObject = get(id);
+        foundObject.setArchived(true);
+        this.objectDao.save(foundObject);
     }
 
     @Override
     public T post(T obj) throws AlreadyOccupiedIdException {
         Integer id = obj.getId();
 
-        if (id == null | (id != null && !exists(id))) {
-            return saveToDB(obj);
+        if (id == null | (id != null && !this.objectDao.exists(id))) {
+            return this.objectDao.save(obj);
         }
 
         throw new AlreadyOccupiedIdException("Given id is already used.");
     }
 
-    private T saveToDB(T obj) {
-        return this.objectDao.save(obj);
-    }
-
-    @Override
-    public void deleteById(Integer id) throws UnavailableElementException {
-        doIfExist(id, n -> this.objectDao.delete(n));
-    }
-
-    private void doIfExist(Integer id, Consumer<Integer> consumer) throws UnavailableElementException {
-        if (!exists(id)) {
-            throw new UnavailableElementException("");
-        }
-
-        consumer.accept(id);
-    }
-
-    private void doIfExist(Integer id, T object, Consumer<T> consumer) throws UnavailableElementException {
-        if (!exists(id)) {
-            throw new UnavailableElementException("");
-        }
-
-        consumer.accept(object);
-    }
-
     @Override
     public void put(T obj) throws UnavailableElementException {
-        doIfExist(obj.getId(), obj, o -> this.objectDao.save(o));
+        Integer id = obj.getId();
+
+        if (id != null && existsAndArchivedIsFalse(id)) {
+            this.objectDao.save(obj);
+        }
+
+        throw new UnavailableElementException("Item not exist");
     }
 
     @Override
-    public void patch(T deliveredObject) throws UnavailableElementException, InvalidMethodNamesException {
-        T loadedObjectFromDb = get(deliveredObject.getId());
+    public void patch(T obj) throws UnavailableElementException, InvalidMethodNamesException {
+        Integer id = obj.getId();
 
-        fieldValueSwapper.antiNullSwap(deliveredObject, loadedObjectFromDb);
-        this.saveToDB(loadedObjectFromDb);
+        if (id != null && existsAndArchivedIsFalse(id)) {
+            T foundObjectFromDbById = this.get(id);
+            this.fieldValueSwapper.antiNullSwap(obj, foundObjectFromDbById);
+
+            this.objectDao.save(foundObjectFromDbById);
+        }
+
+        throw new UnavailableElementException("Item not exist");
     }
 
-    @Override
-    public boolean exists(Integer id) {
-        return this.objectDao.exists(id);
+    private boolean existsAndArchivedIsFalse(Integer id) {
+        T loadedObjFromDatabase = this.objectDao.findByArchivedIsFalseAndIdEquals(id);
+
+        return loadedObjFromDatabase != null;
     }
 }
