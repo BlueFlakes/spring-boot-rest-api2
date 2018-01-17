@@ -30,10 +30,4 @@ public class Customer implements PossessId {
     private ContactDetails contactDetails;
 
     public Customer() {}
-
-    public Customer(String firstName, String lastName, ContactDetails contactDetails) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.contactDetails = contactDetails;
-    }
 }
