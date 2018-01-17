@@ -1,6 +1,6 @@
 package com.stockexchange.exception;
 
-public class UnavailableElementException extends Exception {
+public class UnavailableElementException extends AppCustomException {
     public UnavailableElementException(String message) {
         super(message);
     }

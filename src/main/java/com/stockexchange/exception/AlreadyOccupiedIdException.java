@@ -1,6 +1,6 @@
 package com.stockexchange.exception;
 
-public class AlreadyOccupiedIdException extends Exception {
+public class AlreadyOccupiedIdException extends AppCustomException {
     public AlreadyOccupiedIdException(String message) {
         super(message);
     }
