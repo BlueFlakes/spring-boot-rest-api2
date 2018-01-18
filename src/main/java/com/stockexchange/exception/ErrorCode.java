@@ -1,4 +1,4 @@
-package com.stockexchange.model;
+package com.stockexchange.exception;
 
 import org.springframework.http.HttpStatus;
 
