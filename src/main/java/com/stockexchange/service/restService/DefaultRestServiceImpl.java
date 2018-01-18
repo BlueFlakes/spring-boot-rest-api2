@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 public abstract class DefaultRestServiceImpl<T extends PossessId & PossessArchivedStatus,
                                              U extends CommonRepository<T, Integer>>
                                              implements RestService<T> {
-    protected U objectDao;
+    private U objectDao;
     private ObjectFieldValueSwapper fieldValueSwapper;
 
     public DefaultRestServiceImpl(U objectDao, ObjectFieldValueSwapper fieldValueSwapper) {
