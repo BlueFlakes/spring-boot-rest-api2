@@ -1,15 +1,11 @@
 package com.stockexchange.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.validator.constraints.NotEmpty;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
-@Getter
-@Setter
 public class ContactDetails implements PossessId {
 
     @Id
@@ -21,4 +17,28 @@ public class ContactDetails implements PossessId {
 
     public ContactDetails() {}
 
+    @Override
+    public Integer getId( ) {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getTelephoneNumber( ) {
+        return telephoneNumber;
+    }
+
+    public void setTelephoneNumber(String telephoneNumber) {
+        this.telephoneNumber = telephoneNumber;
+    }
+
+    public String getEmail( ) {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }
