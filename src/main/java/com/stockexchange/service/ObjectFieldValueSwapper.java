@@ -13,6 +13,8 @@ public class ObjectFieldValueSwapper {
     private static final int maxPrefixLength = 3;
     private static final int minPrefixLength = 2;
 
+    public ObjectFieldValueSwapper() {}
+
     public <T> void antiNullSwap(T fromObject, T toObject) throws InvalidMethodNamesException {
         List<String> validPrefixesForGetters = Arrays.asList("get", "is");
         List<String> validPrefixesForSetters = Collections.singletonList("set");
@@ -108,20 +110,18 @@ public class ObjectFieldValueSwapper {
     private <T> void validate(Map<String, Method> gettersFrom, Map<String, Method> settersTo, T fromObj)
             throws InvalidMethodNamesException {
 
-        String errorMsg = "Inconsistent naming of setters and getters";
-
         if (gettersFrom.size() != settersTo.size())
-            throw new InvalidMethodNamesException(errorMsg);
+            throw new InvalidMethodNamesException();
 
         Set<String> names = new HashSet<>();
         names.addAll(gettersFrom.keySet());
         names.addAll(settersTo.keySet());
 
         if (names.size() != gettersFrom.size())
-            throw new InvalidMethodNamesException(errorMsg);
+            throw new InvalidMethodNamesException();
 
         if (getFieldsNames(fromObj.getClass()).length != names.size()) {
-            throw new InvalidMethodNamesException(errorMsg);
+            throw new InvalidMethodNamesException();
         }
     }
 }

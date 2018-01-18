@@ -18,6 +18,8 @@ public abstract class DefaultRestServiceImpl<T extends PossessId & PossessArchiv
     private U objectDao;
     private ObjectFieldValueSwapper fieldValueSwapper;
 
+    public DefaultRestServiceImpl() {}
+
     public DefaultRestServiceImpl(U objectDao, ObjectFieldValueSwapper fieldValueSwapper) {
         this.objectDao = objectDao;
         this.fieldValueSwapper = fieldValueSwapper;
@@ -35,7 +37,7 @@ public abstract class DefaultRestServiceImpl<T extends PossessId & PossessArchiv
             return this.objectDao.findOne(id);
         }
 
-        throw new UnavailableElementException("Unavailable item");
+        throw new UnavailableElementException();
     }
 
     @Override
@@ -45,7 +47,7 @@ public abstract class DefaultRestServiceImpl<T extends PossessId & PossessArchiv
             return;
         }
 
-        throw new UnavailableElementException("Unavailable item");
+        throw new UnavailableElementException();
     }
 
     private void archive(Integer id) throws UnavailableElementException {
@@ -62,7 +64,7 @@ public abstract class DefaultRestServiceImpl<T extends PossessId & PossessArchiv
             return this.objectDao.save(obj);
         }
 
-        throw new AlreadyOccupiedIdException("Given id is already used.");
+        throw new AlreadyOccupiedIdException();
     }
 
     @Override
@@ -74,7 +76,7 @@ public abstract class DefaultRestServiceImpl<T extends PossessId & PossessArchiv
             return;
         }
 
-        throw new UnavailableElementException("Item not exist");
+        throw new UnavailableElementException();
     }
 
     @Override
@@ -89,7 +91,7 @@ public abstract class DefaultRestServiceImpl<T extends PossessId & PossessArchiv
             return;
         }
 
-        throw new UnavailableElementException("Item not exist");
+        throw new UnavailableElementException();
     }
 
     private boolean existsAndArchivedIsFalse(Integer id) {
