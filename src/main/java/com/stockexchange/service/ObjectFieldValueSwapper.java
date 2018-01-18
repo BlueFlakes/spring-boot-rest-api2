@@ -1,7 +1,6 @@
 package com.stockexchange.service;
 
 import com.stockexchange.exception.InvalidMethodNamesException;
-import com.stockexchange.model.Customer;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
@@ -82,7 +81,7 @@ public class ObjectFieldValueSwapper {
 
         return methods.stream()
                       .filter(mth -> methodNameEndsWithFieldNameIgnoreCase(mth.getName(), fieldName))
-                      .filter(mth -> doSentenceContainsAnyValidPrefix(mth.getName(), validPrefixes))
+                      .filter(mth -> doSentenceStartsWithAnyValidPrefix(mth.getName(), validPrefixes))
                       .findAny()
                       .orElse(null);
     }
@@ -94,7 +93,7 @@ public class ObjectFieldValueSwapper {
         return methodName.endsWith(fieldName);
     }
 
-    private boolean doSentenceContainsAnyValidPrefix(String sentence, List<String> validPrefixes) {
+    private boolean doSentenceStartsWithAnyValidPrefix(String sentence, List<String> validPrefixes) {
         return validPrefixes.stream()
                             .anyMatch(sentence::startsWith);
     }
