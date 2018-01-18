@@ -1,0 +1,16 @@
+2018-01-18 16:56:01.220 ERROR kamil-Aspire-VX5-591G --- [nio-8080-exec-2] c.s.Application                          : 400| Invalid data format.
+2018-01-18 16:56:15.528 ERROR kamil-Aspire-VX5-591G --- [nio-8080-exec-4] c.s.Application                          : 400| Invalid data format.
+2018-01-18 16:56:33.597 ERROR kamil-Aspire-VX5-591G --- [nio-8080-exec-6] c.s.Application                          : 400| Invalid data format.
+2018-01-18 16:56:34.576 ERROR kamil-Aspire-VX5-591G --- [nio-8080-exec-8] c.s.Application                          : 400| Invalid data format.
+2018-01-18 16:56:35.394 ERROR kamil-Aspire-VX5-591G --- [io-8080-exec-10] c.s.Application                          : 400| Invalid data format.
+2018-01-18 16:56:35.898 ERROR kamil-Aspire-VX5-591G --- [nio-8080-exec-2] c.s.Application                          : 400| Invalid data format.
+2018-01-18 16:56:36.392 ERROR kamil-Aspire-VX5-591G --- [nio-8080-exec-4] c.s.Application                          : 400| Invalid data format.
+2018-01-18 16:56:36.990 ERROR kamil-Aspire-VX5-591G --- [nio-8080-exec-6] c.s.Application                          : 400| Invalid data format.
+2018-01-18 16:56:45.183 ERROR kamil-Aspire-VX5-591G --- [nio-8080-exec-8] c.s.Application                          : 400| Invalid data format.
+2018-01-18 16:56:45.361 ERROR kamil-Aspire-VX5-591G --- [io-8080-exec-10] c.s.Application                          : 400| Invalid data format.
+2018-01-18 16:56:45.598 ERROR kamil-Aspire-VX5-591G --- [nio-8080-exec-2] c.s.Application                          : 400| Invalid data format.
+2018-01-18 16:56:45.885 ERROR kamil-Aspire-VX5-591G --- [nio-8080-exec-4] c.s.Application                          : 400| Invalid data format.
+2018-01-18 16:56:46.120 ERROR kamil-Aspire-VX5-591G --- [nio-8080-exec-6] c.s.Application                          : 400| Invalid data format.
+2018-01-18 16:56:46.393 ERROR kamil-Aspire-VX5-591G --- [nio-8080-exec-8] c.s.Application                          : 400| Invalid data format.
+2018-01-18 16:59:40.947 ERROR kamil-Aspire-VX5-591G --- [nio-8080-exec-5] c.s.Application                          : Code error: 400 | Invalid data format.
+2018-01-18 16:59:41.586 ERROR kamil-Aspire-VX5-591G --- [nio-8080-exec-1] c.s.Application                          : Code error: 400 | Invalid data format.
