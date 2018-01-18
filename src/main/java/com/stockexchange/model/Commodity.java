@@ -18,7 +18,7 @@ public class Commodity implements PossessId, PossessArchivedStatus {
     private BigDecimal value;
 
     @JsonIgnoreProperties("commodities")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "stockExchange_id")
     private StockExchange stockExchange;
 
