@@ -1,16 +1,12 @@
 package com.stockexchange.service;
 
 import com.stockexchange.exception.InvalidMethodNamesException;
-import com.stockexchange.exception.UnavailableElementException;
 import com.stockexchange.model.Customer;
-import com.stockexchange.model.PossessId;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Component
 public class ObjectFieldValueSwapper {
@@ -18,21 +14,9 @@ public class ObjectFieldValueSwapper {
     private static final int maxPrefixLength = 3;
     private static final int minPrefixLength = 2;
 
-    public static void main(String[] args) throws Exception {
-        Customer customer1 = new Customer();
-        customer1.setFirstName("Kamil");
-
-        Customer customer2 = new Customer();
-
-        ObjectFieldValueSwapper objectFieldValueSwapper = new ObjectFieldValueSwapper();
-
-        objectFieldValueSwapper.antiNullSwap(customer1, customer2);
-        System.out.println(customer2.getFirstName());
-    }
-
     public <T> void antiNullSwap(T fromObject, T toObject) throws InvalidMethodNamesException {
         List<String> validPrefixesForGetters = Arrays.asList("get", "is");
-        List<String> validPrefixesForSetters = Arrays.asList("set");
+        List<String> validPrefixesForSetters = Collections.singletonList("set");
 
         Map<String, Method> fromGetters = collectMethodsJustForSettersAndGetters(fromObject.getClass(), validPrefixesForGetters);
         Map<String, Method> toSetters = collectMethodsJustForSettersAndGetters(toObject.getClass(), validPrefixesForSetters);
@@ -78,27 +62,44 @@ public class ObjectFieldValueSwapper {
         List<String> fieldsNames = Arrays.asList(getFieldsNames(deliveredClass));
         List<Method> methods = Arrays.asList(deliveredClass.getMethods());
 
-        Map<String, Method> validSetters = new HashMap<>();
-        Function<String, String> lower = String::toLowerCase;
+        Map<String, Method> methodsContainer = new HashMap<>();
 
         for (String fieldName : fieldsNames) {
-            String lowerCasedFieldName = lower.apply(fieldName);
+            Method method = findExpectedMethodForGivenField(methods, validPrefixes, fieldName);
 
-            Method method = methods.stream()
-                                   .filter(mth -> lower.apply(mth.getName()).endsWith(lowerCasedFieldName))
-                                   .filter(mth -> validPrefixes.stream().anyMatch(prefix -> mth.getName().startsWith(prefix)))
-                                   .findAny()
-                                   .orElse(null);
-
-            if (method != null && isMethodValid(fieldName, method, validPrefixes)) {
-                validSetters.put(fieldName.toLowerCase(), method);
+            if (method != null && isMethodValid(fieldName, method)) {
+                String lowerFieldName = fieldName.toLowerCase();
+                methodsContainer.put(lowerFieldName, method);
             }
         }
 
-        return validSetters;
+        return methodsContainer;
     }
 
-    private boolean isMethodValid(String fieldName, Method method, List<String> validPrefixes) {
+    private Method findExpectedMethodForGivenField(List<Method> methods,
+                                                   List<String> validPrefixes,
+                                                   String fieldName) {
+
+        return methods.stream()
+                      .filter(mth -> methodNameEndsWithFieldNameIgnoreCase(mth.getName(), fieldName))
+                      .filter(mth -> doSentenceContainsAnyValidPrefix(mth.getName(), validPrefixes))
+                      .findAny()
+                      .orElse(null);
+    }
+
+    private boolean methodNameEndsWithFieldNameIgnoreCase(String methodName, String fieldName) {
+        methodName = methodName.toLowerCase();
+        fieldName = fieldName.toLowerCase();
+
+        return methodName.endsWith(fieldName);
+    }
+
+    private boolean doSentenceContainsAnyValidPrefix(String sentence, List<String> validPrefixes) {
+        return validPrefixes.stream()
+                            .anyMatch(sentence::startsWith);
+    }
+
+    private boolean isMethodValid(String fieldName, Method method) {
         String methodName = method.getName();
 
         int fieldNameLength = fieldName.length();
@@ -107,11 +108,9 @@ public class ObjectFieldValueSwapper {
         int actualPrefixLength = methodNameLength - fieldNameLength;
 
         if (actualPrefixLength <= maxPrefixLength && actualPrefixLength >= minPrefixLength) {
-            String prefix = methodName.substring(0, actualPrefixLength);
-            String lowerCasedPrefix = prefix.toLowerCase();
             String methodNameWithoutPrefix = methodName.substring(actualPrefixLength, methodNameLength);
 
-            if (validPrefixes.contains(lowerCasedPrefix) && methodNameWithoutPrefix.equalsIgnoreCase(fieldName)) {
+            if (methodNameWithoutPrefix.equalsIgnoreCase(fieldName)) {
                 return true;
             }
         }
