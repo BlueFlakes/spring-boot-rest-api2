@@ -18,4 +18,10 @@ public class ErrorCode {
     public String getReason( ) {
         return reason;
     }
+
+    @Override
+    public String toString( ) {
+        String errorNumber = this.httpStatus.toString();
+        return String.format("Code error: %s | %s", errorNumber, reason);
+    }
 }
