@@ -1,10 +1,7 @@
 package com.stockexchange.service.restService;
 
 import com.stockexchange.dao.CommonRepository;
-import com.stockexchange.exception.AlreadyOccupiedIdException;
-import com.stockexchange.exception.AppCustomException;
-import com.stockexchange.exception.InvalidMethodNamesException;
-import com.stockexchange.exception.UnavailableElementException;
+import com.stockexchange.exception.*;
 import com.stockexchange.model.Customer;
 import com.stockexchange.model.PossessArchivedStatus;
 import com.stockexchange.model.PossessId;
