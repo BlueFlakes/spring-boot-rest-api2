@@ -26,7 +26,6 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     protected <T extends AppCustomException> ResponseEntity<ErrorCode> handleKnownExceptions(T ex) {
         ErrorCode errorCode = ex.getErrorCode();
         this.logger.logError(errorCode.toString());
-
         return ResponseEntity.status(errorCode.getHttpStatus()).body(errorCode);
     }
 

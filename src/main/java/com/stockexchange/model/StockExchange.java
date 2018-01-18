@@ -15,14 +15,11 @@ public class StockExchange implements PossessId, PossessArchivedStatus {
     @Column(name = "stockExchange_id")
     private Integer id;
 
-    @NotEmpty
     private String name;
-
-    @NotNull
     private boolean archived;
 
     @JsonIgnoreProperties("stockExchange")
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "stockExchange", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "stockExchange", cascade = CascadeType.ALL)
     private List<Commodity> commodities = new ArrayList<>();
 
     @Override
