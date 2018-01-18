@@ -3,7 +3,7 @@ package com.stockexchange.controller;
 
 import com.stockexchange.exception.AppCustomException;
 import com.stockexchange.exception.InvalidDataFormatException;
-import com.stockexchange.model.ErrorCode;
+import com.stockexchange.exception.ErrorCode;
 import com.stockexchange.service.loggerService.LoggerAble;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
