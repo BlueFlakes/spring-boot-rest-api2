@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
+@Table
 public class Customer implements PossessId, PossessArchivedStatus {
 
     @Id
@@ -22,8 +23,8 @@ public class Customer implements PossessId, PossessArchivedStatus {
     @NotNull
     private boolean archived;
 
-    @NotNull
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @PrimaryKeyJoinColumn
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, optional = false)
     private ContactDetails contactDetails;
 
     public Customer() {}

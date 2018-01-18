@@ -10,16 +10,13 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Getter
 @Setter
-public class ContactDetails {
+public class ContactDetails implements PossessId {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotEmpty
     private String telephoneNumber;
-
-    @NotEmpty
     private String email;
 
     public ContactDetails() {}
