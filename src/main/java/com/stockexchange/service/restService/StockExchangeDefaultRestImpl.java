@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class StockExchangeDefaultRestImpl extends DefaultRestServiceImpl<StockExchange, StockExchangeDao> {
     public StockExchangeDefaultRestImpl(StockExchangeDao stockExchangeDao,
-                                        ObjectFieldValueSwapper<StockExchange> fieldValueSwapper) {
+                                        ObjectFieldValueSwapper fieldValueSwapper) {
         super(stockExchangeDao, fieldValueSwapper);
     }
 }

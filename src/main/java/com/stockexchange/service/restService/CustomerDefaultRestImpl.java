@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CustomerDefaultRestImpl extends DefaultRestServiceImpl<Customer, CustomerDao> {
-    public CustomerDefaultRestImpl(CustomerDao customerDao, ObjectFieldValueSwapper<Customer> valueSwapper) {
+    public CustomerDefaultRestImpl(CustomerDao customerDao,
+                                   ObjectFieldValueSwapper valueSwapper) {
         super(customerDao, valueSwapper);
     }
 }

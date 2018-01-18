@@ -2,32 +2,42 @@ package com.stockexchange.service;
 
 import com.stockexchange.exception.InvalidMethodNamesException;
 import com.stockexchange.exception.UnavailableElementException;
+import com.stockexchange.model.Customer;
 import com.stockexchange.model.PossessId;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
-public class ObjectFieldValueSwapper<T extends PossessId> {
+public class ObjectFieldValueSwapper {
 
-    private static final String from = "get";
-    private static final String to = "set";
-    private static final int prefixLength = 3;
+    private static final int maxPrefixLength = 3;
+    private static final int minPrefixLength = 2;
 
-    public void antiNullSwap(T fromObject, T toObject) throws UnavailableElementException, InvalidMethodNamesException {
-        Map<String, Method> gettersFromDeliveredObject = getMethodsWhichStartWithPrefix(from, fromObject.getClass());
-        Map<String, Method> settersFromDatabaseObject = getMethodsWhichStartWithPrefix(to, toObject.getClass());
+    public static void main(String[] args) throws Exception {
+        Customer customer1 = new Customer();
+        customer1.setFirstName("Kamil");
 
-        Map<String, Method> fromGetters = getRidOfPrefixFromKeys(gettersFromDeliveredObject);
-        Map<String, Method> toSetters = getRidOfPrefixFromKeys(settersFromDatabaseObject);
-        validate(fromGetters, toSetters);
+        Customer customer2 = new Customer();
 
+        ObjectFieldValueSwapper objectFieldValueSwapper = new ObjectFieldValueSwapper();
+
+        objectFieldValueSwapper.antiNullSwap(customer1, customer2);
+        System.out.println(customer2.getFirstName());
+    }
+
+    public <T> void antiNullSwap(T fromObject, T toObject) throws InvalidMethodNamesException {
+        List<String> validPrefixesForGetters = Arrays.asList("get", "is");
+        List<String> validPrefixesForSetters = Arrays.asList("set");
+
+        Map<String, Method> fromGetters = collectMethodsJustForSettersAndGetters(fromObject.getClass(), validPrefixesForGetters);
+        Map<String, Method> toSetters = collectMethodsJustForSettersAndGetters(toObject.getClass(), validPrefixesForSetters);
+
+        validate(fromGetters, toSetters, fromObject);
         Set<String> methodNames = fromGetters.keySet();
 
         try {
@@ -44,34 +54,76 @@ public class ObjectFieldValueSwapper<T extends PossessId> {
         }
     }
 
-    private void validate(Map<String, Method> gettersFrom, Map<String, Method> settersTo)
+    private <T> void validate(Map<String, Method> gettersFrom, Map<String, Method> settersTo, T fromObj)
             throws InvalidMethodNamesException {
 
+        String errorMsg = "Inconsistent naming of setters and getters";
+
         if (gettersFrom.size() != settersTo.size())
-            throw new InvalidMethodNamesException("Not equal setters and getters amount.Inconsistent naming.");
+            throw new InvalidMethodNamesException(errorMsg);
 
         Set<String> names = new HashSet<>();
         names.addAll(gettersFrom.keySet());
         names.addAll(settersTo.keySet());
 
         if (names.size() != gettersFrom.size())
-            throw new InvalidMethodNamesException("Inconsistent naming of setters and getters");
+            throw new InvalidMethodNamesException(errorMsg);
+
+        if (getFieldsNames(fromObj.getClass()).length != names.size()) {
+            throw new InvalidMethodNamesException(errorMsg);
+        }
     }
 
-    private Map<String, Method> getMethodsWhichStartWithPrefix(String prefix, Class<?> deliveredClass) {
-        Method[] methods = deliveredClass.getDeclaredMethods();
+    private Map<String, Method> collectMethodsJustForSettersAndGetters(Class<?> deliveredClass, List<String> validPrefixes) {
+        List<String> fieldsNames = Arrays.asList(getFieldsNames(deliveredClass));
+        List<Method> methods = Arrays.asList(deliveredClass.getMethods());
 
-        return Arrays.stream(methods)
-                .filter(mth -> mth.getName()
-                                  .startsWith(prefix))
-                .collect(Collectors.toMap(Method::getName, method -> method));
+        Map<String, Method> validSetters = new HashMap<>();
+        Function<String, String> lower = String::toLowerCase;
+
+        for (String fieldName : fieldsNames) {
+            String lowerCasedFieldName = lower.apply(fieldName);
+
+            Method method = methods.stream()
+                                   .filter(mth -> lower.apply(mth.getName()).endsWith(lowerCasedFieldName))
+                                   .filter(mth -> validPrefixes.stream().anyMatch(prefix -> mth.getName().startsWith(prefix)))
+                                   .findAny()
+                                   .orElse(null);
+
+            if (method != null && isMethodValid(fieldName, method, validPrefixes)) {
+                validSetters.put(fieldName.toLowerCase(), method);
+            }
+        }
+
+        return validSetters;
     }
 
-    private Map<String, Method> getRidOfPrefixFromKeys(Map<String, Method> map) {
-        Function<String, String> abandonPrefix = s -> s.substring(prefixLength, s.length());
+    private boolean isMethodValid(String fieldName, Method method, List<String> validPrefixes) {
+        String methodName = method.getName();
 
-        return map.entrySet().stream()
-                .collect(Collectors.toMap(es -> abandonPrefix.apply(es.getKey()),
-                        Map.Entry::getValue));
+        int fieldNameLength = fieldName.length();
+        int methodNameLength = methodName.length();
+
+        int actualPrefixLength = methodNameLength - fieldNameLength;
+
+        if (actualPrefixLength <= maxPrefixLength && actualPrefixLength >= minPrefixLength) {
+            String prefix = methodName.substring(0, actualPrefixLength);
+            String lowerCasedPrefix = prefix.toLowerCase();
+            String methodNameWithoutPrefix = methodName.substring(actualPrefixLength, methodNameLength);
+
+            if (validPrefixes.contains(lowerCasedPrefix) && methodNameWithoutPrefix.equalsIgnoreCase(fieldName)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private String[] getFieldsNames(Class<?> deliveredClass) {
+        Field[] fields = deliveredClass.getDeclaredFields();
+
+        return Arrays.stream(fields)
+                     .map(Field::getName)
+                     .toArray(String[]::new);
     }
 }

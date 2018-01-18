@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ShareDefaultRestImpl extends DefaultRestServiceImpl<Share, ShareDao> {
-    public ShareDefaultRestImpl(ShareDao shareDao, ObjectFieldValueSwapper<Share> fieldValueSwapper) {
+    public ShareDefaultRestImpl(ShareDao shareDao,
+                                ObjectFieldValueSwapper fieldValueSwapper) {
         super(shareDao, fieldValueSwapper);
     }
 }

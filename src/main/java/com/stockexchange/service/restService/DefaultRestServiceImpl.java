@@ -15,10 +15,10 @@ import java.util.function.Consumer;
 public abstract class DefaultRestServiceImpl<T extends PossessId & PossessArchivedStatus,
                                              U extends CommonRepository<T, Integer>>
                                              implements RestService<T> {
-    private U objectDao;
-    private ObjectFieldValueSwapper<T> fieldValueSwapper;
+    protected U objectDao;
+    private ObjectFieldValueSwapper fieldValueSwapper;
 
-    public DefaultRestServiceImpl(U objectDao, ObjectFieldValueSwapper<T> fieldValueSwapper) {
+    public DefaultRestServiceImpl(U objectDao, ObjectFieldValueSwapper fieldValueSwapper) {
         this.objectDao = objectDao;
         this.fieldValueSwapper = fieldValueSwapper;
     }
@@ -71,6 +71,7 @@ public abstract class DefaultRestServiceImpl<T extends PossessId & PossessArchiv
 
         if (id != null && existsAndArchivedIsFalse(id)) {
             this.objectDao.save(obj);
+            return;
         }
 
         throw new UnavailableElementException("Item not exist");
@@ -85,6 +86,7 @@ public abstract class DefaultRestServiceImpl<T extends PossessId & PossessArchiv
             this.fieldValueSwapper.antiNullSwap(obj, foundObjectFromDbById);
 
             this.objectDao.save(foundObjectFromDbById);
+            return;
         }
 
         throw new UnavailableElementException("Item not exist");
