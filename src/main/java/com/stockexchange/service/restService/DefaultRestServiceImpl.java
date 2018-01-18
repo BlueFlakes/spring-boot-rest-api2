@@ -2,34 +2,40 @@ package com.stockexchange.service.restService;
 
 import com.stockexchange.dao.CommonRepository;
 import com.stockexchange.exception.*;
-import com.stockexchange.model.Customer;
 import com.stockexchange.model.PossessArchivedStatus;
 import com.stockexchange.model.PossessId;
 import com.stockexchange.service.ObjectFieldValueSwapper;
-
-import java.util.function.Consumer;
+import com.stockexchange.service.loggerService.LoggerAble;
 
 public abstract class DefaultRestServiceImpl<T extends PossessId & PossessArchivedStatus,
                                              U extends CommonRepository<T, Integer>>
                                              implements RestService<T> {
     private U objectDao;
     private ObjectFieldValueSwapper fieldValueSwapper;
+    private LoggerAble logger;
 
     public DefaultRestServiceImpl() {}
 
-    public DefaultRestServiceImpl(U objectDao, ObjectFieldValueSwapper fieldValueSwapper) {
+    public DefaultRestServiceImpl(U objectDao,
+                                  ObjectFieldValueSwapper fieldValueSwapper,
+                                  LoggerAble logger) {
         this.objectDao = objectDao;
         this.fieldValueSwapper = fieldValueSwapper;
+        this.logger = logger;
     }
 
 
     @Override
     public Iterable<T> getAll( ) {
+        this.logger.logInfo("Get | look for all objects");
+
         return this.objectDao.findAllByArchivedIsFalse();
     }
 
     @Override
     public T get(Integer id) throws UnavailableElementException {
+        this.logger.logInfo("Get | look for object");
+
         if (existsAndArchivedIsFalse(id)) {
             return this.objectDao.findOne(id);
         }
@@ -39,6 +45,8 @@ public abstract class DefaultRestServiceImpl<T extends PossessId & PossessArchiv
 
     @Override
     public void deleteById(Integer id) throws UnavailableElementException {
+        this.logger.logInfo("Delete | delete object");
+
         if (existsAndArchivedIsFalse(id)) {
             archive(id);
             return;
@@ -55,6 +63,8 @@ public abstract class DefaultRestServiceImpl<T extends PossessId & PossessArchiv
 
     @Override
     public T post(T obj) throws AlreadyOccupiedIdException {
+        this.logger.logInfo("Post | add object");
+
         Integer id = obj.getId();
 
         if (id == null | (id != null && !this.objectDao.exists(id))) {
@@ -66,6 +76,8 @@ public abstract class DefaultRestServiceImpl<T extends PossessId & PossessArchiv
 
     @Override
     public void put(T obj) throws UnavailableElementException {
+        this.logger.logInfo("Put | update object");
+
         Integer id = obj.getId();
 
         if (id != null && existsAndArchivedIsFalse(id)) {
@@ -78,6 +90,8 @@ public abstract class DefaultRestServiceImpl<T extends PossessId & PossessArchiv
 
     @Override
     public void patch(T obj) throws UnavailableElementException, InvalidMethodNamesException {
+        this.logger.logInfo("Patch | update object");
+
         Integer id = obj.getId();
 
         if (id != null && existsAndArchivedIsFalse(id)) {
