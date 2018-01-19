@@ -2,6 +2,7 @@ package com.stockexchange.controller;
 
 import com.stockexchange.dao.CommonRepository;
 import com.stockexchange.exception.AlreadyOccupiedIdException;
+import com.stockexchange.exception.AppCustomException;
 import com.stockexchange.exception.InvalidMethodNamesException;
 import com.stockexchange.exception.UnavailableElementException;
 import com.stockexchange.model.PossessArchivedStatus;
@@ -29,7 +30,7 @@ public abstract class WebController<T extends PossessId & PossessArchivedStatus,
     }
 
     @PostMapping(path = "")
-    private T doPost(@RequestBody T obj) throws AlreadyOccupiedIdException {
+    private T doPost(@RequestBody T obj) throws AppCustomException {
         return this.restService.post(obj);
     }
 
