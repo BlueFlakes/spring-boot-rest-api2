@@ -62,7 +62,7 @@ public abstract class DefaultRestServiceImpl<T extends PossessId & PossessArchiv
     }
 
     @Override
-    public T post(T obj) throws AlreadyOccupiedIdException {
+    public T post(T obj) throws AppCustomException {
         this.logger.logInfo("Post | add object");
 
         Integer id = obj.getId();
